@@ -349,7 +349,7 @@ export default function Home() {
     <div className="bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 min-h-screen flex flex-col">
       <Head>
         <title>Drep.fun</title>
-        <meta name="description" content="A Cardano dApp powered by Mesh" />
+        <meta name="description" content="Make being a Drep fun again." />
       </Head>
       <header className="flex justify-between p-4 items-center">
         <div className="text-3xl font-bold text-pink-800">🍭 Drep.fun 🍬</div>
