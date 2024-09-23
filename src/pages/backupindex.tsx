@@ -19,7 +19,7 @@ import {
 import { blake2b  } from "blakejs";
 import cbor from "cbor";
 
-import blueprint from './plutus.json'; // Adjust path as needed
+//import blueprint from './plutus.json'; // Adjust path as needed
 
 // Function to hash a JSON file using BLAKE2b-256 to match b2sum output
 const hashJsonObject = (jsonObject:any) => {
