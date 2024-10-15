@@ -79,7 +79,7 @@ export default function VotePage() {
 
       const dRepId = drepId; // Assume slug contains the DRep ID
       const collateral = await selectedWallet.getCollateral();
-
+      if (voteKind==="YES"){
       txBuilder.txInCollateral(
         collateral[0]?.input.txHash!,
         collateral[0]?.input.outputIndex!,
@@ -93,14 +93,37 @@ export default function VotePage() {
           txHash: slug as string,
           txIndex: 0,
         },
-        { voteKind } // Use the voteKind state here
+        { voteKind: "Yes" } // Use the voteKind state here
       )
       .voteScript(rightScript)
       .voteRedeemerValue(mConStr0([]), "Mesh", {mem: 200000, steps: 50000000}) 
       .requiredSignerHash("fd3a6bfce30d7744ac55e9cf9146d8a2a04ec7fb2ce2ee6986260653")
       .readOnlyTxInReference("80e9b65d4b8cd8fd7af00bc3984ffc192b25f4c848a9a93b40e72b1bafa51eb2", 2)
       .changeAddress(changeAddress)
-      .selectUtxosFrom(selectedUtxos);
+      .selectUtxosFrom(selectedUtxos)
+    }else{
+        txBuilder.txInCollateral(
+            collateral[0]?.input.txHash!,
+            collateral[0]?.input.outputIndex!,
+            collateral[0]?.output.amount!,
+            collateral[0]?.output.address!,
+          )
+          .votePlutusScriptV3()
+          .vote(
+            { type: "DRep", drepId: dRepId },
+            {
+              txHash: slug as string,
+              txIndex: 0,
+            },
+            { voteKind: "No" } // Use the voteKind state here
+          )
+          .voteScript(rightScript)
+          .voteRedeemerValue(mConStr0([]), "Mesh", {mem: 200000, steps: 50000000}) 
+          .requiredSignerHash("fd3a6bfce30d7744ac55e9cf9146d8a2a04ec7fb2ce2ee6986260653")
+          .readOnlyTxInReference("80e9b65d4b8cd8fd7af00bc3984ffc192b25f4c848a9a93b40e72b1bafa51eb2", 2)
+          .changeAddress(changeAddress)
+          .selectUtxosFrom(selectedUtxos)
+    }
 
       const unsignedTx = await txBuilder.complete();
       const signedTx = await selectedWallet.signTx(unsignedTx);
