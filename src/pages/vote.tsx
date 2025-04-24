@@ -7,8 +7,8 @@ import cbor from "cbor";
 
 export default function VotePage() {
   const router = useRouter();
-  const { slug } = router.query; // Capture the dynamic part of the URL
-  
+  //const { slug } = router.query; // Capture the dynamic part of the URL
+  const slug="8c653ee5c9800e6d31e79b5a7f7d4400c81d44717ad4db633dc18d4c07e4a4fd"
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const [selectedWallet, setSelectedWallet] = useState<BrowserWallet | null>(null);
@@ -86,6 +86,7 @@ export default function VotePage() {
         collateral[0]?.output.amount!,
         collateral[0]?.output.address!,
       )
+      .setNetwork("mainnet")
       .votePlutusScriptV3()
       .vote(
         { type: "DRep", drepId: dRepId },
@@ -98,7 +99,7 @@ export default function VotePage() {
       .voteScript(rightScript)
       .voteRedeemerValue(mConStr0([]), "Mesh", {mem: 200000, steps: 50000000}) 
       .requiredSignerHash("fd3a6bfce30d7744ac55e9cf9146d8a2a04ec7fb2ce2ee6986260653")
-      .readOnlyTxInReference("80e9b65d4b8cd8fd7af00bc3984ffc192b25f4c848a9a93b40e72b1bafa51eb2", 2)
+      .readOnlyTxInReference("91cf566ee15fa8efc3e23c053cc340af76af7ed7ec6a13c164185bb65918d992", 2)
       .changeAddress(changeAddress)
       .selectUtxosFrom(selectedUtxos)
     }else{
@@ -115,18 +116,18 @@ export default function VotePage() {
               txHash: slug as string,
               txIndex: 0,
             },
-            { voteKind: "No" } // Use the voteKind state here
+            { voteKind: "Yes" } // Use the voteKind state here
           )
           .voteScript(rightScript)
           .voteRedeemerValue(mConStr0([]), "Mesh", {mem: 200000, steps: 50000000}) 
           .requiredSignerHash("fd3a6bfce30d7744ac55e9cf9146d8a2a04ec7fb2ce2ee6986260653")
-          .readOnlyTxInReference("80e9b65d4b8cd8fd7af00bc3984ffc192b25f4c848a9a93b40e72b1bafa51eb2", 2)
+          .readOnlyTxInReference("91cf566ee15fa8efc3e23c053cc340af76af7ed7ec6a13c164185bb65918d992", 2)
           .changeAddress(changeAddress)
           .selectUtxosFrom(selectedUtxos)
     }
 
       const unsignedTx = await txBuilder.complete();
-      const signedTx = await selectedWallet.signTx(unsignedTx);
+      const signedTx = await selectedWallet.signTx(unsignedTx,true);
       const txHash = await selectedWallet.submitTx(signedTx);
 
       setTransactionHash(txHash);
