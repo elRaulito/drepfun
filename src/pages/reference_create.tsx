@@ -1,19 +1,14 @@
 import Head from "next/head";
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import { BrowserWallet, Wallet, MeshTxBuilder, MaestroProvider, keepRelevant, Transaction, DRep, mConStr0, resolveScriptHashDRepId } from "@meshsdk/core";
+import { Asset, BrowserWallet, Wallet, MeshTxBuilder, MaestroProvider, keepRelevant, Transaction, DRep, mConStr0, resolveScriptHashDRepId } from "@meshsdk/core";
 import { blake2b } from "blakejs";
 import cbor from "cbor";
 
 export default function VotePage() {
   const router = useRouter();
   //const { slug } = router.query; // Capture the dynamic part of the URL
-  const govActions = [
-    { txHash: "b11527fbcdc9d41e8f497de64a029a18673a5eefc413718459046f0b7a1a6656", txIndex: 0 },
-    { txHash: "b518efa466593906ab388f978b3695449809aacdf28d2aaf4eb5ba16b3c24a1e", txIndex: 0 },
-    { txHash: "8807e3cee3be5647742c329c1dea242f0c1c29b8ad050e15169e3b0302fcbfd6", txIndex: 0 },
-    { txHash: "f35285db3c4e085ad331843b3007737952b8a322bb3216311edc37fdf44ad3da", txIndex: 0 },
-  ];
+  const slug="8ad3d454f3496a35cb0d07b0fd32f687f66338b7d60e787fc0a22939e5d8833e"
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const [selectedWallet, setSelectedWallet] = useState<BrowserWallet | null>(null);
@@ -77,13 +72,21 @@ export default function VotePage() {
         .encode(Buffer.from("5902f00101003232323232323225333002323232323232323232323232533300e3370e900300389919191802007180a980b0011bad3014001301037540102a66601c66e1d2008007132300200c3013301037540102a66601c66e1d200a0071323232300400e30153016002375a602800260206ea8020588c94ccc03cc01cc040dd5000899192999808980498091baa0011325333012300a30133754002264a666026601660286ea80044c94ccc050c8c004c94ccc058c008c05cdd50008a400026eb4c06cc060dd500099299980b1801180b9baa00114c0103d87a8000132330010013756603860326ea8008894ccc06c004530103d87a8000132323232533301c337229110b000de14042756438383632000021533301c3371e91010b000de14042756438383632000021301333020375000297ae014c0103d87a8000133006006003375a603a0066eb8c06c008c07c008c074004c8cc004004dd59805180c1baa300a3018375400e44a666034002298103d87a8000132323232533301b337229111c4523c5e21d409b81c95b45b0aea275b8ea1406e6cafea5583b9f8a5f000021533301b3371e91011c4523c5e21d409b81c95b45b0aea275b8ea1406e6cafea5583b9f8a5f00002130123301f374c00297ae014c0103d87a8000133006006003375660380066eb8c068008c078008c070004dc3a4004264660020026eb0c068c06cc06cc06cc06cc06cc06cc06cc06cc05cdd500411299980c8008a5013253330173371e6eb8c070008010528899801801800980e0008a50375c6030602a6ea800458c05cc050dd50008b180b18099baa00116300430123754602a60246ea8c010c048dd5000980a18089baa00116330033758600460206ea800520002301230130013001001222533301000214c0103d87a800013232533300f300700313006330130024bd70099980280280099b8000348004c05000cc048008dd2a40006e1d2000300837540026016601800460140026014004601000260086ea8004526136565734aae7555cf2ab9f5740ae855d101", "hex"))
         .toString("hex");
 
-      const registrationFee = "100";
+      const registrationFee = "50000000";
       const assetMap = new Map();
       assetMap.set("lovelace", registrationFee);
       const selectedUtxos = keepRelevant(assetMap, utxos);
 
+  const assets: Asset[] = [
+    {
+      unit: "lovelace",
+      quantity: "40000000", // 1 ADA in lovelace
+    },
+  ];
+
       const dRepId = drepId; // Assume slug contains the DRep ID
       const collateral = await selectedWallet.getCollateral();
+      if (voteKind==="YES"){
       txBuilder.txInCollateral(
         collateral[0]?.input.txHash!,
         collateral[0]?.input.outputIndex!,
@@ -91,32 +94,30 @@ export default function VotePage() {
         collateral[0]?.output.address!,
       )
       .setNetwork("mainnet")
-
-      for (const ga of govActions) {
-        txBuilder
-          .votePlutusScriptV3()
-          .vote(
-            { type: "DRep", drepId: dRepId },
-            {
-              txHash: ga.txHash,
-              txIndex: ga.txIndex,
-            },
-            { voteKind: voteKind as "Yes" | "No" | "Abstain" }
-          )
-          .voteScript(rightScript)
-          .voteRedeemerValue(mConStr0([]), "Mesh", {mem: 200000, steps: 50000000})
-      }
-
-      // Dynamically look up the current UTXO holding the auth NFT
-      const nftRes = await fetch('/api/blockfrost/nft-utxo?asset=4523c5e21d409b81c95b45b0aea275b8ea1406e6cafea5583b9f8a5f000de14042756438383632');
-      if (!nftRes.ok) throw new Error('Could not find auth NFT UTXO');
-      const { tx_hash: nftTxHash, tx_index: nftTxIndex } = await nftRes.json();
-
-      txBuilder
+      .votePlutusScriptV3()
+      .vote(
+        { type: "DRep", drepId: dRepId },
+        {
+          txHash: slug as string,
+          txIndex: 0,
+        },
+        { voteKind: "Yes" } // Use the voteKind state here
+      )
+      .voteScript(rightScript)
+      .voteRedeemerValue(mConStr0([]), "Mesh", {mem: 200000, steps: 50000000}) 
       .requiredSignerHash("fd3a6bfce30d7744ac55e9cf9146d8a2a04ec7fb2ce2ee6986260653")
-      .readOnlyTxInReference(nftTxHash, nftTxIndex)
+      .readOnlyTxInReference("d42ec1cb80ca5db6aec223bcf3c1aec7bf30abfb5cdce135223a573eb77bd53a", 4)
       .changeAddress(changeAddress)
       .selectUtxosFrom(selectedUtxos)
+    }else{
+      console.log("STO QUA")
+
+        txBuilder.txOut("addr1qx4h26wa7zswgx74cuq6wgjvslqrr6pf0kdw9tsnyd9r58dysvqtwqvp000qlq5qjas5wje8s98mx9vkz80n4029779s4zmfa2", assets) // Send assets to the script address
+        .txOutReferenceScript(rightScript,"V3")
+        .changeAddress(changeAddress) // Send change back to the wallet address
+        .selectUtxosFrom(utxos) // Select UTxOs to use in the transaction
+        .complete(); // Complete the transaction building
+    }
 
       const unsignedTx = await txBuilder.complete();
       const signedTx = await selectedWallet.signTx(unsignedTx,true);
