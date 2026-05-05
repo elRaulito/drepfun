@@ -51,8 +51,25 @@ interface Proposal {
   epoch_no: number | null;
 }
 
+interface Withdrawal { withdrawalAmount: number; withdrawalAddress: string; }
+
 interface ProposalMeta {
-  json_metadata?: { body?: { title?: string; abstract?: string } };
+  json_metadata?: {
+    body?: {
+      title?: string;
+      abstract?: string;
+      onChain?: { withdrawals?: Withdrawal[] };
+    };
+  };
+}
+
+function lovelaceToAda(lovelace: number): string {
+  return '₳ ' + (lovelace / 1_000_000).toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function proposalTotalWithdrawal(m: ProposalMeta | undefined): number {
+  return (m?.json_metadata?.body?.onChain?.withdrawals ?? [])
+    .reduce((s, w) => s + (w.withdrawalAmount ?? 0), 0);
 }
 
 interface VoteModal {
@@ -563,27 +580,46 @@ export default function RaulPage() {
             </p>
 
             {/* Per-proposal summary */}
-            <div className="space-y-1 mb-5 max-h-48 overflow-y-auto pr-1">
-              {proposals
-                .filter(p => selectedVotes.has(`${p.tx_hash}_${p.cert_index}`))
-                .map(p => {
-                  const key = `${p.tx_hash}_${p.cert_index}`;
-                  const vk = selectedVotes.get(key)!;
-                  const title = meta[key]?.json_metadata?.body?.title;
-                  return (
-                    <div key={key} className="flex items-center justify-between gap-2 bg-white/5 rounded-lg px-3 py-2">
-                      <span className="text-sm text-white/80 truncate">
-                        {title ? stripMarkdown(title) : `${p.tx_hash.slice(0, 12)}…`}
-                      </span>
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                        vk === 'Yes' ? 'bg-green-500/30 text-green-300'
-                        : vk === 'No' ? 'bg-red-500/30 text-red-300'
-                        : 'bg-gray-500/30 text-gray-300'
-                      }`}>{vk}</span>
+            {(() => {
+              const selected = proposals.filter(p => selectedVotes.has(`${p.tx_hash}_${p.cert_index}`));
+              const totalWithdrawal = selected.reduce((sum, p) => {
+                const key = `${p.tx_hash}_${p.cert_index}`;
+                return sum + proposalTotalWithdrawal(meta[key]);
+              }, 0);
+              return (
+                <>
+                  <div className="space-y-1 mb-3 max-h-48 overflow-y-auto pr-1">
+                    {selected.map(p => {
+                      const key = `${p.tx_hash}_${p.cert_index}`;
+                      const vk = selectedVotes.get(key)!;
+                      const title = meta[key]?.json_metadata?.body?.title;
+                      const withdrawal = proposalTotalWithdrawal(meta[key]);
+                      return (
+                        <div key={key} className="flex items-center justify-between gap-2 bg-white/5 rounded-lg px-3 py-2">
+                          <span className="text-sm text-white/80 truncate flex-1">
+                            {title ? stripMarkdown(title) : `${p.tx_hash.slice(0, 12)}…`}
+                          </span>
+                          {withdrawal > 0 && (
+                            <span className="text-xs text-yellow-300 flex-shrink-0">{lovelaceToAda(withdrawal)}</span>
+                          )}
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                            vk === 'Yes' ? 'bg-green-500/30 text-green-300'
+                            : vk === 'No' ? 'bg-red-500/30 text-red-300'
+                            : 'bg-gray-500/30 text-gray-300'
+                          }`}>{vk}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {totalWithdrawal > 0 && (
+                    <div className="flex justify-between items-center bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2 mb-4">
+                      <span className="text-sm text-yellow-200">Total treasury withdrawal</span>
+                      <span className="text-sm font-bold text-yellow-300">{lovelaceToAda(totalWithdrawal)}</span>
                     </div>
-                  );
-                })}
-            </div>
+                  )}
+                </>
+              );
+            })()}
 
             <label className="block text-sm text-white/60 mb-2">
               Rationale{' '}

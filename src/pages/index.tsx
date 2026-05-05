@@ -34,10 +34,25 @@ interface Proposal {
   deposit: string;
 }
 
+interface Withdrawal { withdrawalAmount: number; withdrawalAddress: string; }
+
 interface ProposalMeta {
   json_metadata?: {
-    body?: { title?: string; abstract?: string };
+    body?: {
+      title?: string;
+      abstract?: string;
+      onChain?: { withdrawals?: Withdrawal[] };
+    };
   };
+}
+
+function lovelaceToAda(lovelace: number): string {
+  return '₳ ' + (lovelace / 1_000_000).toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function proposalTotalWithdrawal(m: ProposalMeta | undefined): number {
+  return (m?.json_metadata?.body?.onChain?.withdrawals ?? [])
+    .reduce((s, w) => s + (w.withdrawalAmount ?? 0), 0);
 }
 
 interface DRepInfo {
@@ -370,9 +385,17 @@ export default function HomePage() {
         >
           <div className="bg-[#1a0a2e] border border-white/15 rounded-2xl p-6 max-w-lg w-full shadow-2xl">
             <h2 className="text-xl font-bold mb-1">Cast Your Vote</h2>
-            <p className="text-white/40 text-xs font-mono mb-4 break-all">
+            <p className="text-white/40 text-xs font-mono mb-2 break-all">
               {voteModal.proposal.tx_hash}#{voteModal.proposal.cert_index}
             </p>
+            {(() => {
+              const total = proposalTotalWithdrawal(meta[`${voteModal.proposal.tx_hash}_${voteModal.proposal.cert_index}`]);
+              return total > 0 ? (
+                <p className="text-yellow-300 text-sm font-semibold mb-4">
+                  Treasury withdrawal: {lovelaceToAda(total)}
+                </p>
+              ) : null;
+            })()}
 
             {/* Vote kind selector */}
             <div className="flex gap-2 mb-5">
