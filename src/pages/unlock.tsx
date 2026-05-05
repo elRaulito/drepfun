@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import { BrowserWallet, Wallet, MeshTxBuilder, MaestroProvider, keepRelevant, Transaction, mConStr0 } from "@meshsdk/core";
 import cbor from "cbor";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const UnlockFeeRewardScript: any = { script: "" };
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const owner: any = { stakeCredentialHash: "" };
 
 export default function UnlockPage() {
