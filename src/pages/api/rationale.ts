@@ -16,13 +16,10 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const bucket = process.env.S3_BUCKET_NAME;
-  const region = process.env.AWS_REGION;
-  const baseUrl = process.env.S3_BASE_URL;
+  const bucket = process.env.S3_BUCKET_NAME ?? 'drepdotfun';
+  const region = process.env.AWS_REGION ?? 'eu-west-2';
+  const baseUrl = process.env.S3_BASE_URL ?? 'https://drepdotfun.s3.eu-west-2.amazonaws.com';
 
-  if (!bucket || !region || !baseUrl) {
-    return res.status(501).json({ error: 'S3 not configured — set S3_BUCKET_NAME, AWS_REGION, S3_BASE_URL in .env.local' });
-  }
 
   // Support two calling conventions
   let content: object;
@@ -64,13 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const s3 = new S3Client({
-      region,
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-      },
-    });
+    const s3 = new S3Client({ region });
 
     await s3.send(
       new PutObjectCommand({
