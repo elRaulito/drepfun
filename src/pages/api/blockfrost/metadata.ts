@@ -100,7 +100,7 @@ async function tryEndpoint(url: string, headers: Record<string, string>): Promis
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const key = process.env.BLOCKFROST_PROJECT_ID;
+  const key = process.env.BLOCKFROST_PROJECT_ID ?? process.env.NEXT_PUBLIC_BLOCKFROST_PROJECT_ID;
   if (!key) return res.status(500).json({ error: 'BLOCKFROST_PROJECT_ID not configured' });
 
   const { tx_hash, cert_index } = req.query;

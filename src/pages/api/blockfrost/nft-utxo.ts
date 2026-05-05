@@ -4,7 +4,7 @@ const BASE = 'https://cardano-mainnet.blockfrost.io/api/v0';
 
 // Returns the current on-chain UTXO holding the given asset
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const key = process.env.BLOCKFROST_PROJECT_ID;
+  const key = process.env.BLOCKFROST_PROJECT_ID ?? process.env.NEXT_PUBLIC_BLOCKFROST_PROJECT_ID;
   if (!key) return res.status(500).json({ error: 'BLOCKFROST_PROJECT_ID not configured' });
 
   const { asset } = req.query;
