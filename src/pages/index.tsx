@@ -66,6 +66,7 @@ export default function HomePage() {
   const [isVoting, setIsVoting] = useState(false);
   const [txHashes, setTxHashes] = useState<Record<string, string>>({});
   const [connectError, setConnectError] = useState<string | null>(null);
+  const [proposalError, setProposalError] = useState<string | null>(null);
 
   // Load available wallets
   useEffect(() => {
@@ -75,9 +76,16 @@ export default function HomePage() {
   // Load proposals then fetch metadata in batches
   useEffect(() => {
     fetch('/api/blockfrost/proposals')
-      .then(r => r.json())
-      .then((data: Proposal[]) => {
-        if (!Array.isArray(data)) return;
+      .then(async r => {
+        const data = await r.json();
+        if (!r.ok) {
+          setProposalError(`API error ${r.status}: ${data?.error ?? JSON.stringify(data)}`);
+          return;
+        }
+        if (!Array.isArray(data)) {
+          setProposalError(`Unexpected response: ${JSON.stringify(data)}`);
+          return;
+        }
         setProposals(data);
 
         const BATCH = 5;
@@ -99,7 +107,7 @@ export default function HomePage() {
           }
         })();
       })
-      .catch(() => {})
+      .catch(err => setProposalError(String(err)))
       .finally(() => setLoadingProposals(false));
   }, []);
 
@@ -264,7 +272,7 @@ export default function HomePage() {
           </div>
         ) : proposals.length === 0 ? (
           <p className="text-center text-white/40 py-20">
-            No proposals found. Make sure BLOCKFROST_PROJECT_ID is set in .env.local
+            {proposalError ? `Failed to load proposals: ${proposalError}` : 'No proposals found.'}
           </p>
         ) : (
           <div className="space-y-4">
