@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { useState, useEffect } from 'react';
 import { BrowserWallet, Wallet, MeshTxBuilder, BlockfrostProvider, hashDrepAnchor } from "@meshsdk/core";
 
@@ -202,7 +203,7 @@ export default function HomePage() {
 
       {/* Header */}
       <header className="sticky top-0 z-20 bg-black/40 backdrop-blur-md border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <a href="/" className="text-xl font-bold">🍭 DRep.fun</a>
+        <Link href="/" className="text-xl font-bold">🍭 DRep.fun</Link>
 
         <div className="flex items-center gap-3">
           {isConnected ? (

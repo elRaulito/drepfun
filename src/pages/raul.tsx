@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { useState, useEffect } from 'react';
 import {
   BrowserWallet,
@@ -305,7 +306,7 @@ export default function RaulPage() {
       {/* Header */}
       <header className="sticky top-0 z-20 bg-black/40 backdrop-blur-md border-b border-white/10 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <a href="/" className="text-xl font-bold">🍭 DRep.fun</a>
+          <Link href="/" className="text-xl font-bold">🍭 DRep.fun</Link>
           <span className="text-xs bg-pink-500/30 border border-pink-400/30 px-2 py-0.5 rounded-full text-pink-300">
             Admin · ElRaulito
           </span>
