@@ -27,7 +27,8 @@ function hrpExpand(hrp: string): number[] {
 function to5bit(bytes: Buffer): number[] {
   let acc = 0, bits = 0;
   const out: number[] = [];
-  for (const b of bytes) {
+  for (let i = 0; i < bytes.length; i++) {
+    const b = bytes[i];
     acc = ((acc << 8) | b) & 0xffffffff;
     bits += 8;
     while (bits >= 5) { bits -= 5; out.push((acc >> bits) & 31); }
