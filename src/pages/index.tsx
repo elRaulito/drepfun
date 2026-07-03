@@ -47,7 +47,7 @@ interface ProposalMeta {
 }
 
 function lovelaceToAda(lovelace: number): string {
-  return '₳ ' + (lovelace / 1_000_000).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  return 'â‚³â€‰' + (lovelace / 1_000_000).toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
 function proposalTotalWithdrawal(m: ProposalMeta | undefined): number {
@@ -132,7 +132,7 @@ export default function HomePage() {
     setConnectError(null);
     try {
       // CIP-95 extension enables getDRep()
-      const w = await BrowserWallet.enable(walletId, [95]);
+      const w = await BrowserWallet.enable(walletId, [{ cip: 95 }]);
       setWallet(w);
       setIsConnected(true);
 
@@ -145,7 +145,7 @@ export default function HomePage() {
           if (r.ok) setDrepInfo(await r.json());
         }
       } catch {
-        // wallet doesn't expose DRep data — user is not a DRep or wallet lacks CIP-95
+        // wallet doesn't expose DRep data â€” user is not a DRep or wallet lacks CIP-95
       }
     } catch (e: any) {
       setConnectError(e?.message ?? 'Connection failed');
@@ -220,13 +220,13 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-900 via-purple-900 to-indigo-900 text-white" style={{ colorScheme: 'dark' }}>
       <Head>
-        <title>DRep.fun — Governance Proposals</title>
+        <title>DRep.fun â€” Governance Proposals</title>
         <meta name="description" content="Browse and vote on Cardano governance proposals as a DRep." />
       </Head>
 
       {/* Header */}
       <header className="sticky top-0 z-20 bg-black/40 backdrop-blur-md border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold">🍭 DRep.fun</Link>
+        <Link href="/" className="text-xl font-bold">ðŸ­ DRep.fun</Link>
 
         <div className="flex items-center gap-3">
           {isConnected ? (
@@ -235,7 +235,7 @@ export default function HomePage() {
               <span className="text-green-300">Connected</span>
               {isDRep && (
                 <span className="ml-1 bg-purple-500/40 border border-purple-400/40 px-2 py-0.5 rounded-full text-xs text-purple-200">
-                  DRep ✓
+                  DRep âœ“
                 </span>
               )}
             </div>
@@ -268,9 +268,9 @@ export default function HomePage() {
         <h1 className="text-3xl font-bold mb-1">Governance Proposals</h1>
         <p className="text-white/50 text-sm mb-8">
           {isDRep
-            ? `Voting as DRep: ${drepId?.slice(0, 14)}…${drepId?.slice(-6)}`
+            ? `Voting as DRep: ${drepId?.slice(0, 14)}â€¦${drepId?.slice(-6)}`
             : isConnected
-            ? 'Wallet connected — not registered as an active DRep'
+            ? 'Wallet connected â€” not registered as an active DRep'
             : 'Connect your CIP-95 wallet to vote as a DRep'}
         </p>
 
@@ -327,14 +327,14 @@ export default function HomePage() {
 
                   {txHash ? (
                     <div className="bg-green-500/15 border border-green-400/20 rounded-lg p-3 text-sm text-green-300">
-                      ✓ Vote submitted ·{' '}
+                      âœ“ Vote submitted Â·{' '}
                       <a
                         href={`https://cardanoscan.io/transaction/${txHash}`}
                         target="_blank"
                         rel="noreferrer"
                         className="font-mono text-xs underline opacity-70 hover:opacity-100"
                       >
-                        {txHash.slice(0, 24)}…
+                        {txHash.slice(0, 24)}â€¦
                       </a>
                     </div>
                   ) : isDRep ? (
@@ -373,7 +373,7 @@ export default function HomePage() {
           onClick={() => (window.location.href = `/${ELRAULITO}`)}
           className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-bold py-3 px-5 rounded-full shadow-xl shadow-purple-900/60 transition-all hover:scale-105 text-sm"
         >
-          🍭 Delegate to ElRaulito
+          ðŸ­ Delegate to ElRaulito
         </button>
       </div>
 
@@ -421,7 +421,7 @@ export default function HomePage() {
             {/* Rationale */}
             <label className="block text-sm text-white/60 mb-2">
               Rationale{' '}
-              <span className="text-white/30 text-xs">(optional — stored on S3, anchored to vote)</span>
+              <span className="text-white/30 text-xs">(optional â€” stored on S3, anchored to vote)</span>
             </label>
             <textarea
               value={rationale}
@@ -443,7 +443,7 @@ export default function HomePage() {
                 disabled={isVoting}
                 className="flex-1 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white text-sm font-semibold transition"
               >
-                {isVoting ? 'Submitting…' : `Vote ${voteModal.voteKind}`}
+                {isVoting ? 'Submittingâ€¦' : `Vote ${voteModal.voteKind}`}
               </button>
             </div>
           </div>

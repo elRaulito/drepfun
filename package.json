@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1041.0",
-    "@meshsdk/core": "^1.7.4",
-    "@meshsdk/react": "^1.7.4",
+    "@meshsdk/core": "^1.9.1",
+    "@meshsdk/react": "^1.8.14",
     "blake2": "^5.0.0",
     "cbor": "^9.0.2",
     "next": "14.2.5",

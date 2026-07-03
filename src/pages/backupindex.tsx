@@ -81,7 +81,7 @@ export default function Home() {
   const handleConnectWallet = async () => {
     try {
       if (selectedWalletId) {
-        const wallet:BrowserWallet = await BrowserWallet.enable(selectedWalletId, [95]);
+        const wallet:BrowserWallet = await BrowserWallet.enable(selectedWalletId, [{ cip: 95 }]);
         setSelectedWallet(wallet);
         setIsConnected(true); // Set isConnected to true when wallet is successfully connected
         console.log("Connected to wallet:", selectedWalletId);
@@ -374,7 +374,7 @@ export default function Home() {
       txBuilder
       .drepDeregistrationCertificate(drepId)
       .certificateScript("58ff58fd01010033232323232322322533300432323232323232533300b3370e9002001099198011bac301030113011301130113011301130113011300e375400e014601e601a6ea800c54ccc02ccdc3a400c0042646464660086eb0c048c04cc04cc04cc04cc04cc04cc04cc04cc040dd5004806180898090011bad3010001300d37540062c44646600200200644a66602200229404c94ccc03ccdc79bae301300200414a2266006006002602600260146ea8004c030c034008c02c004c02c008c024004c018dd50008a4c26cac6eb80055cd2ab9d5573caae7d5d0aba24c011e581ce3d28c78fa125198affefff50269125c81ba34e598890ed1d077f1710001")
-      .selectUtxosFrom(selectedUtxos, undefined, "50000000")
+      .selectUtxosFrom(selectedUtxos)
       .changeAddress(changeAddress);
 
 
@@ -487,7 +487,7 @@ export default function Home() {
         <meta name="description" content="Make being a Drep fun again." />
       </Head>
       <header className="flex justify-between p-4 items-center">
-        <div className="text-3xl font-bold text-pink-800">🍭 Drep.fun 🍬</div>
+        <div className="text-3xl font-bold text-pink-800">ðŸ­ Drep.fun ðŸ¬</div>
         <div className="flex items-center space-x-4">
   <div className="relative inline-block">
     <select

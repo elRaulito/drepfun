@@ -40,7 +40,7 @@ export default function SlugPage() {
   const handleConnectWallet = async () => {
     try {
       if (selectedWalletId) {
-        const wallet: BrowserWallet = await BrowserWallet.enable(selectedWalletId, [95]);
+        const wallet: BrowserWallet = await BrowserWallet.enable(selectedWalletId, [{ cip: 95 }]);
         setSelectedWallet(wallet);
         setIsConnected(true);
         console.log("Connected to wallet:", selectedWalletId);
@@ -133,7 +133,7 @@ export default function SlugPage() {
 
       {/* Header */}
       <header className="flex justify-between p-4 items-center">
-        <div className="text-2xl font-bold text-pink-800">🍭 Delegate to a DRep 🍬</div>
+        <div className="text-2xl font-bold text-pink-800">ðŸ­ Delegate to a DRep ðŸ¬</div>
         <div className="flex items-center space-x-4">
           <div className="relative inline-block">
             <select
