@@ -199,17 +199,28 @@ export default function RaulPage() {
       )
       .setNetwork('mainnet');
 
-    for (const ga of govActions) {
-      txBuilder
-        .votePlutusScriptV3()
-        .vote(
+    // All votes share one voter (the DRep script), so the tx must carry exactly one
+    // vote redeemer (indexed by voter, not by vote). Attach the script + redeemer to
+    // the first vote only; the rest merge under the same voter as plain votes.
+    govActions.forEach((ga, i) => {
+      if (i === 0) {
+        txBuilder
+          .votePlutusScriptV3()
+          .vote(
+            { type: 'DRep', drepId },
+            { txHash: ga.tx_hash, txIndex: ga.cert_index },
+            { voteKind: ga.voteKind, ...(anchor ? { anchor } : {}) }
+          )
+          .voteScript(rightScript)
+          .voteRedeemerValue(mConStr0([]), 'Mesh', { mem: 200000, steps: 50000000 });
+      } else {
+        txBuilder.vote(
           { type: 'DRep', drepId },
           { txHash: ga.tx_hash, txIndex: ga.cert_index },
           { voteKind: ga.voteKind, ...(anchor ? { anchor } : {}) }
-        )
-        .voteScript(rightScript)
-        .voteRedeemerValue(mConStr0([]), 'Mesh', { mem: 200000, steps: 50000000 });
-    }
+        );
+      }
+    });
 
     txBuilder
       .requiredSignerHash(REQUIRED_SIGNER)
